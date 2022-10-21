@@ -1,0 +1,69 @@
+<?php
+session_start();
+$user_id = $_SESSION['member_id'];
+include "database.php";
+
+
+$sql_displayValues = "SELECT * FROM profiles where user_id = '$user_id'";
+$result_displayValues = mysqli_query($mysqli, $sql_displayValues);
+
+$row_displayValues = mysqli_fetch_assoc($result_displayValues);
+$about = $row_displayValues['about'];
+$gender = $row_displayValues['gender'];
+$dob = $row_displayValues['dob'];
+$sport1 = $row_displayValues['sport1'];
+$sport2 = $row_displayValues['sport2'];
+$sport3 = $row_displayValues['sport3'];
+$country = $row_displayValues['country']; 
+
+echo $about;
+ 
+?>
+
+<?php
+if (isset($_REQUEST['submit'])){
+
+    $mysqli = require __DIR__  . "/database.php";
+
+
+ 
+ $sql_check_isavail = "SELECT * FROM profiles where user_id = '$user_id'";
+$result_check_isavail = mysqli_query($mysqli, $sql_check_isavail);
+
+if (mysqli_num_rows($result_check_isavail) == 1) {
+
+} else {
+    $sql= "INSERT INTO profiles (user_id, about, gender, dob, sport1, sport2, sport3, country, date_added)
+    VALUES (?,?,?,?,?,?,?,?,?)";
+
+$stmt = $mysqli->stmt_init();
+
+
+
+
+if ( ! $stmt->prepare($sql)) {
+die("SQL error: ". $mysqli->error);
+}
+
+/**binding values to the placeholder characters */
+
+$stmt->bind_param("sssssssss",
+              $_REQUEST["user_id"],
+              $_REQUEST["about"],
+              $_REQUEST["gender"],
+              $_REQUEST["dob"],
+              $_REQUEST["sport1"],
+              $_REQUEST["sport2"],
+              $_REQUEST["sport3"],
+              $_REQUEST["country"],
+              date('Y-m-d'));
+             
+
+
+$stmt->execute();
+}
+}         
+?>
+
+
+
